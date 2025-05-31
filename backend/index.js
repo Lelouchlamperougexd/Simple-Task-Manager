@@ -4,7 +4,7 @@ const db = require('./db');
 const client = require('prom-client');
 
 const app = express();
-const port = process.env.PORT || 4500;
+const port = process.env.PORT || 9000;
 
 app.use(bodyParser.json());
 const path = require('path');
