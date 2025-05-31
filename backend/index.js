@@ -4,10 +4,11 @@ const db = require('./db');
 const client = require('prom-client');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4500;
 
 app.use(bodyParser.json());
-app.use(express.static('frontend'));
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 const taskCounter = new client.Counter({
   name: 'task_created_total',
