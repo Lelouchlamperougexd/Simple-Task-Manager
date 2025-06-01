@@ -3,39 +3,42 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install dependencies
-      run: npm install
-
+      - name: Install dependencies
+        run: npm install
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
 
-    - name: Deploy to server
-      env:
-        SSH_PRIVATE_KEY: 
-      run: |
-        ssh -o StrictHostKeyChecking=no user@your_server_ip << 'EOF'
-        cd /path/to/your/app
-        git pull origin main
-        npm install --production
-        pm2 restart my-backend
-        EOF
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2 via SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOST: 16.171.234.33
+          USER: ec2-user
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+            cd /home/ec2-user/Simple-Task-Manager
+            git pull origin main
+            docker compose down
+            docker compose up -d --build
+          EOF
