@@ -120,3 +120,17 @@
   </script>
 </body>
 </html>
+<script>
+  const start = performance.timing.navigationStart;
+const end = performance.timing.loadEventEnd;
+const loadTime = end - start;
+console.log("Page Load Time (ms):", loadTime);
+
+// Push to a custom backend endpoint, then record as a Prometheus metric there.
+fetch('/frontend-metrics', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ loadTime })
+});
+
+</script>
