@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Manager</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #ffffff;
+      margin-top: 50px;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #taskForm {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    #taskInput {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 10px 16px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #taskList {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #taskList li {
+      background-color: #f1f1f1;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+
+    #taskList li:hover {
+      background-color: #e2e2e2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Task Manager</h1>
+    <form id="taskForm">
+      <input type="text" id="taskInput" placeholder="Enter task" required />
+      <button type="submit">Add Task</button>
+    </form>
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    const form = document.getElementById('taskForm');
+    const taskList = document.getElementById('taskList');
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const task = document.getElementById('taskInput').value;
+      await fetch('/tasks', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ title: task })
+      });
+      document.getElementById('taskInput').value = '';
+      loadTasks();
+    };
+
+    async function loadTasks() {
+      const res = await fetch('/tasks');
+      const tasks = await res.json();
+      taskList.innerHTML = '';
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.textContent = task.title;
+        taskList.appendChild(li);
+      });
+    }
+
+    loadTasks();
+  </script>
+</body>
+</html>
+<script>
+  const start = performance.timing.navigationStart;
+const end = performance.timing.loadEventEnd;
+const loadTime = end - start;
+console.log("Page Load Time (ms):", loadTime);
+
+// Push to a custom backend endpoint, then record as a Prometheus metric there.
+fetch('/frontend-metrics', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ loadTime })
+});
+
+</script>

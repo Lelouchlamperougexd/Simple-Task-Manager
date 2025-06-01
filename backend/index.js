@@ -4,11 +4,30 @@ const db = require('./db');
 const client = require('prom-client');
 
 const app = express();
-const port = process.env.PORT || 9000;
+const port = process.env.PORT || 7000;
 
 app.use(bodyParser.json());
+
+
+const pool = require('./db');
+
+pool.query(`
+  CREATE TABLE IF NOT EXISTS tasks (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL
+  );
+`, (err) => {
+  if (err) {
+    console.error('❌ Ошибка создания таблицы:', err);
+  } else {
+    console.log('✅ Таблица tasks готова');
+  }
+});
+
+
 const path = require('path');
-app.use(express.static(path.join(__dirname, '../frontend')));
+
+app.use(express.static(path.join(__dirname)));
 
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics();

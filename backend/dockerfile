@@ -1,0 +1,22 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Копируем только backend/package*.json
+COPY backend/package*.json ./
+
+# Устанавливаем зависимости
+RUN npm install
+RUN apk add --no-cache bash
+
+
+# Копируем весь backend код
+COPY backend/ .
+
+# Копируем скрипт wait-for-it.sh
+COPY wait-for-it.sh /app/wait-for-it.sh
+RUN chmod +x /app/wait-for-it.sh
+
+EXPOSE 7000
+
+CMD ["./wait-for-it.sh", "db:5432", "--", "node", "index.js"]
