@@ -254,13 +254,3 @@ docker compose logs backend
 docker compose logs db
 ```
 
-## Future Enhancements
-
-- [ ] Task completion functionality
-- [ ] Task editing and deletion
-- [ ] User authentication
-- [ ] Task categories/tags
-- [ ] REST API documentation
-- [ ] Unit and integration tests
-- [ ] Grafana dashboard for metrics
-- [ ] HTTPS/SSL configuration
